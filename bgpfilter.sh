@@ -7,7 +7,7 @@ function generate_asn_filter() {
   local whois=$(whois -h whois.radb.net -- -i origin -T $ROUTE_TYPE AS$as)
   local filter_text=""
   if [[ "$fullconf" == "true" ]]; then
-    filter_text="filter ${ROUTE_TYPE}_${as} {"
+    filter_text="function ${ROUTE_TYPE}_${as}() {"
   fi
   # Parse the whois information
   while read line; do
@@ -15,11 +15,11 @@ function generate_asn_filter() {
 	  line="${line/$ROUTE_TYPE:/}"
 	  line="${line//[[:space:]]/}"
 	  echo "--- Adding $line"
-	  filter_text+="\nif net = $line then accept;"
+	  filter_text+="\nif net = $line then return true;"
 	fi
   done <<< "$whois"
   if [[ "$fullconf" == "true" ]]; then
-    filter_text+="\nreject;\n}"
+    filter_text+="\nreturn false;\n}"
     echo -e "$filter_text" > "$TARGET/${ROUTE_TYPE}_${as}.conf"
   else
     ASN_FILTER="$filter_text"
@@ -72,7 +72,7 @@ function generate_set_filter() {
     generate_asn_filter $as false
     filter+="\n$ASN_FILTER"
   done
-  echo -e "filter ${ROUTE_TYPE}_$as_set {\n$filter\nreject;\n}" > "$TARGET/${ROUTE_TYPE}_$as_set.conf"
+  echo -e "function ${ROUTE_TYPE}_$as_set() {\n$filter\nreturn false;\n}" > "$TARGET/${ROUTE_TYPE}_$as_set.conf"
 }
 
 if [ -z "$1" ]; then
