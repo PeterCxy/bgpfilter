@@ -72,7 +72,7 @@ function generate_set_filter() {
     generate_asn_filter $as false
     filter+="\n$ASN_FILTER"
   done
-  echo -e "function ${ROUTE_TYPE}_$as_set() {\n$filter\nreturn false;\n}" > "$TARGET/${ROUTE_TYPE}_$as_set.conf"
+  echo -e "function ${ROUTE_TYPE}_${as_set//-/_}() {\n$filter\nreturn false;\n}" > "$TARGET/${ROUTE_TYPE}_$as_set.conf"
 }
 
 if [ -z "$1" ]; then
