@@ -12,11 +12,11 @@ function generate_asn_filter() {
   # Parse the whois information
   while read line; do
     if [[ "$line" =~ ^$ROUTE_TYPE\:* ]]; then
-	  line="${line/$ROUTE_TYPE:/}"
-	  line="${line//[[:space:]]/}"
-	  echo "--- Adding $line"
-	  filter_text+="\nif net = $line then return true;"
-	fi
+      line="${line/$ROUTE_TYPE:/}"
+      line="${line//[[:space:]]/}"
+      echo "--- Adding $line"
+      filter_text+="\nif net = $line then return true;"
+    fi
   done <<< "$whois"
   if [[ "$fullconf" == "true" ]]; then
     filter_text+="\nreturn false;\n}"
